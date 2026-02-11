@@ -33,5 +33,5 @@ coverage/
 .DS_Store
 #train sql
 train_ticketing.sql
-
+BACKEND_CONNECTION_GUIDE.md
 

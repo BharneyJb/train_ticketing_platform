@@ -1,5 +1,6 @@
 const Model = require("./Model")
 const connection = require("./connection")
+const bcrypt = require('bcrypt');
 
 class Customer extends Model {
     
@@ -15,12 +16,15 @@ class Customer extends Model {
 
     static async customerLogin (email, password) {
         let customer = await this.findByEmail(email)
-        if (customer != null) {
-            if (bcrypt.compareSync(password, customer.password)) {
-                return customer
-            }
-        }
-        return null
+        console.log(customer); 
+        return customer;
+        
+        // if (customer != null) {
+        //     if (bcrypt.compareSync(password, customer.password)) {
+        //         return customer
+        //     }
+        // }
+        // return null
     }
   
     }

@@ -13,7 +13,6 @@ const { allTrains, storeTrain, findTrain, updateTrain, deleteTrain } = require('
 const { allAmounts, storeAmount, findAmount, updateAmount, deleteAmount } = require('../controllers/amountController');
 const { allTravelClasses, storeTravelClass, findTravelClass, updateTravelClass, deleteTravelClass } = require('../controllers/travelClassController');
 const { allAdmins, storeAdmin, findAdmin, updateAdmin, deleteAdmin } = require('../controllers/adminController');
-const { allAdmins, storeAdmin, findAdmin, updateAdmin, deleteAdmin } = require('../controllers/adminController');
 const customerValidator = require('../validators/customerValidator');
 const stationValidator = require('../validators/stationValidator');
 const fareValidator = require('../validators/fareValidator');

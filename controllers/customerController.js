@@ -12,11 +12,22 @@ let storeCustomer = async (req, res) => {
     }
 }
 
+
 let updateCustomer = async (req, res) => {
-    const { id } = req.params;
-    let customer = await Customer.findById(id)
-    customer.setProp(req.body)
-    res.send(await customer.update())
+    // Use authenticated customer from middleware
+    let customer = req.customer;
+    customer.setProp(req.body);
+    const updated = await customer.update();
+    // Return user data for Flutter app
+    res.json({
+        message: 'Profile updated successfully',
+        user: {
+            id: updated.id,
+            name: updated.name,
+            email: updated.email,
+            phone: updated.phone || ''
+        }
+    });
 }
 
 let deleteCustomer = async (req, res) => {
@@ -25,9 +36,14 @@ let deleteCustomer = async (req, res) => {
 }
 
 let findCustomer = async (req, res) => {
-    const { id } = req.params;
-    let customer = await Customer.findById(id)
-    res.send(customer);
+    // Return authenticated customer from middleware
+    const customer = req.customer;
+    res.json({
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone || ''
+    });
 }
 
 let allCustomers = async (req, res) => {

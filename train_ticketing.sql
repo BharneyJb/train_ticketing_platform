@@ -37,31 +37,26 @@ CREATE TABLE IF NOT EXISTS schedules (
 CREATE TABLE IF NOT EXISTS travelClasses (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
-    description TEXT,
-)
-
-
-
-
+    description TEXT
+);
 
 CREATE TABLE IF NOT EXISTS fares (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     passengerType ENUM('Adult', 'Child') NOT NULL,
     travelClassId INT UNSIGNED NOT NULL,
-    FOREIGN KEY (travelClassId) REFERENCES travelClasses(id),
-)
+    FOREIGN KEY (travelClassId) REFERENCES travelClasses(id)
+);
 
 CREATE TABLE IF NOT EXISTS bookings (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     date DATE,
     arrivalTime TIMESTAMP,
-   departureTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    departureTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     scheduleId INT UNSIGNED NOT NULL,
     FOREIGN KEY (scheduleId) REFERENCES schedules(id),
     customerId INT UNSIGNED NOT NULL,
-    FOREIGN KEY (customerId) REFERENCES customers(id),
-)
-
+    FOREIGN KEY (customerId) REFERENCES customers(id)
+);
 
 CREATE TABLE IF NOT EXISTS trains (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -76,17 +71,15 @@ CREATE TABLE IF NOT EXISTS coaches (
     trainId INT UNSIGNED NOT NULL,
     FOREIGN KEY (trainId) REFERENCES trains(id),
     travelClassId INT UNSIGNED NOT NULL,
-    FOREIGN KEY (travelClassId) REFERENCES travelClasses(id),
-
-
-
+    FOREIGN KEY (travelClassId) REFERENCES travelClasses(id)
+);
 
 CREATE TABLE IF NOT EXISTS seats (
     id INT PRIMARY KEY AUTO_INCREMENT,
     code VARCHAR(255),
-    coachId INT UNSIGNED NOT NULL, -- Assuming this is the correct column name
+    coachId INT UNSIGNED NOT NULL,
     FOREIGN KEY (coachId) REFERENCES coaches(id),
-    customerId INT UNSIGNED NOT NULL,
+    customerId INT UNSIGNED,
     FOREIGN KEY (customerId) REFERENCES customers(id),
     travelClassId INT UNSIGNED NOT NULL,
     FOREIGN KEY (travelClassId) REFERENCES travelClasses(id),
@@ -95,15 +88,11 @@ CREATE TABLE IF NOT EXISTS seats (
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-
-
-
-
 CREATE TABLE IF NOT EXISTS bookedSeats (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     bookingId INT UNSIGNED NOT NULL,
     FOREIGN KEY (bookingId) REFERENCES bookings(id),
-    seatId INT ,
+    seatId INT,
     FOREIGN KEY (seatId) REFERENCES seats(id),
     passengerType ENUM('Adult', 'Child') DEFAULT 'Adult',
     phone VARCHAR(255),
@@ -121,10 +110,9 @@ CREATE TABLE IF NOT EXISTS amounts (
     updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE admins(
-
-    `name` VARCHAR(255) NOT NULL, 
+CREATE TABLE IF NOT EXISTS admins(
     id INT PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL, 
     email VARCHAR(255) NOT NULL,
     `role` VARCHAR(255),
     password VARCHAR(255) NOT NULL,

@@ -16,6 +16,9 @@ let storeCustomer = async (req, res) => {
 let updateCustomer = async (req, res) => {
     // Use authenticated customer from middleware
     let customer = req.customer;
+    if (req.body.password) {
+        req.body.password = bcrypt.hashSync(req.body.password, 10);
+    }
     customer.setProp(req.body);
     const updated = await customer.update();
     // Return user data for Flutter app

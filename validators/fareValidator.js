@@ -2,9 +2,24 @@ const { body } = require("express-validator");
 const checkValidationResult = require("./checkValidationResult");
 
 const fareValidator = [
-    body('stationCode').notEmpty().withMessage('Station Code is required').isAlpha().withMessage('StationCode must be alphabetic').isLength({max: 255}).withMessage('Station Code cannot be more than 255 characters'),
-    body('name').notEmpty().withMessage('Station name is required').isAlpha().withMessage('Station name must be alphabetic').isLength({max: 255}).withMessage('Station name cannot be more than 255 characters'),
-    body('city').notEmpty().withMessage('city is required').isAlpha().withMessage('city must be alphabetic').isLength({max: 255}).withMessage('city cannot be more than 255 characters'),
+    body('passengerType')
+        .notEmpty()
+        .withMessage("Passenger Type is required")
+        .isIn(['Adult', 'Child'])
+        .withMessage("Passenger type must be either Adult or Child"),
+
+    body('travelClassId')
+        .notEmpty()
+        .withMessage('Travel class ID is required')
+        .isNumeric()
+        .withMessage('Travel class ID must be a number'),
+
+    body('amountId')
+        .notEmpty()
+        .withMessage('Amount is required')
+        .isNumeric()
+        .withMessage('Amount must be a number'),
+
     checkValidationResult
 ]
 

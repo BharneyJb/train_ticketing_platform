@@ -10,28 +10,40 @@ let storeFare = async (req, res) => {
     }
 }
 
-let updateFare = async (req, res)=>{
-    const {id} = req.params;
+let faresWithAmounts = async (req, res) => {
+    let results = await Fare.findWithAmounts();
+    res.send(results);
+}
+
+let updateFare = async (req, res) => {
+    const { id } = req.params;
     let fare = await Fare.findById(id)
-    fare.setProp(req.body)    
+    fare.setProp(req.body)
     res.send(await fare.update())
 }
 
 
 let deleteFare = async (req, res) => {
-    const{id} = req.params;    
+    const { id } = req.params;
     res.send(await Fare.delete(id))
 }
 
-let findFare =  async (req, res)=>{
-    const {id} = req.params;
+let findFare = async (req, res) => {
+    const { id } = req.params;
     let fare = await Fare.findById(id)
     res.send(fare);
 }
 
-let allFares =  async (req, res)=>{
+let allFares = async (req, res) => {
     let results = await Fare.find()
     res.send(results)
 }
 
-module.exports = {storeFare, allFares, findFare, updateFare, deleteFare}
+module.exports = {
+    storeFare,
+    allFares,
+    findFare,
+    updateFare,
+    deleteFare,
+    faresWithAmounts
+}

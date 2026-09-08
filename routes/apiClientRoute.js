@@ -2,10 +2,10 @@ const { Router } = require("express");
 const { allCoaches, findCoach } = require("../controllers/coachController");
 const { findBooking, storeBooking } = require("../controllers/bookingController");
 const { findCustomer, updateCustomer } = require("../controllers/customerController");
-const { allSchedules, findSchedule, getSchedulesByRoute } = require("../controllers/scheduleController");
+const { allSchedules, findSchedule, getSchedulesByRoute, getScheduleOptions } = require("../controllers/scheduleController");
 const { findSeat, allSeats } = require("../controllers/seatController");
 const { allStations, findStation } = require("../controllers/stationController");
-const { allFares, findFare } = require("../controllers/faresController");
+const { allFares, findFare, faresWithAmounts } = require("../controllers/faresController");
 const { allBookedSeats, storeBookedSeat } = require("../controllers/bookedSeatController");
 const { allTrains, findTrain } = require("../controllers/trainController");
 const { findAmount } = require("../controllers/amountController");
@@ -31,6 +31,7 @@ router.put("/customers", updateCustomer);
 // schedule routes
 router.get("/schedules/route/:fromStationId/:toStationId", getSchedulesByRoute);
 router.get("/schedules", allSchedules);
+router.get("/schedules/:id/options", getScheduleOptions);
 router.get("/schedules/:id", findSchedule);
 
 // seat routes
@@ -43,6 +44,7 @@ router.get("/stations/:id", findStation);
 
 // fare routes
 router.get("/fares", allFares);
+router.get("/fares/pricing", faresWithAmounts);
 router.get("/fares/:id", findFare);
 
 // booked-seat routes

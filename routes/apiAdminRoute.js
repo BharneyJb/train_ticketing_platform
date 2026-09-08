@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth')
-const {Router} = require('express');
+const { Router } = require('express');
 const router = Router();
 const { allCoaches, storeCoach, findCoach, updateCoach, deleteCoach } = require('../controllers/coachController');
 const { allBookings, storeBooking, findBooking, updateBooking, deleteBooking } = require('../controllers/bookingController');
@@ -7,7 +7,7 @@ const { allCustomers, storeCustomer, findCustomer, updateCustomer, deleteCustome
 const { allSchedules, storeSchedule, findSchedule, updateSchedule, deleteSchedule } = require('../controllers/scheduleController');
 const { allSeats, storeSeat, findSeat, updateSeat, deleteSeat } = require('../controllers/seatController');
 const { allStations, storeStation, findStation, updateStation, deleteStation } = require('../controllers/stationController');
-const { storeFare, allFares, findFare, updateFare, deleteFare } = require('../controllers/faresController');
+const { storeFare, allFares, findFare, updateFare, deleteFare, faresWithAmounts } = require('../controllers/faresController');
 const { allBookedSeats, storeBookedSeat, findBookedSeat, updateBookedSeat, deleteBookedSeat } = require('../controllers/bookedSeatController');
 const { allTrains, storeTrain, findTrain, updateTrain, deleteTrain } = require('../controllers/trainController');
 const { allAmounts, storeAmount, findAmount, updateAmount, deleteAmount } = require('../controllers/amountController');
@@ -21,10 +21,10 @@ const scheduleValidator = require('../validators/scheduleValidator');
 const seatValidator = require('../validators/seatValidator');
 const bookingValidator = require('../validators/bookingValidator');
 const coachValidator = require('../validators/coachValidator');
-const {login} = require('../controllers/authcontroller');
+const { login } = require('../controllers/authcontroller');
 
 
-router.route('/login').get((req, res)=>{}).post(login)
+router.route('/login').get((req, res) => { }).post(login)
 router.use(auth);
 
 
@@ -41,17 +41,17 @@ router.route('/bookings/:id').get(findBooking).put(updateBooking).delete(deleteB
 
 //Customer route
 
-router.route('/customers').get(allCustomers).post(customerValidator ,storeCustomer)
-router.route('/customers/:id').get(findCustomer).put(customerValidator,updateCustomer).delete(deleteCustomer)
+router.route('/customers').get(allCustomers).post(customerValidator, storeCustomer)
+router.route('/customers/:id').get(findCustomer).put(customerValidator, updateCustomer).delete(deleteCustomer)
 
 
 //Schedule route
-router.route('/schedules').get(allSchedules).post(scheduleValidator,storeSchedule)
-router.route('/schedules/:id').get(findSchedule).put(scheduleValidator,updateSchedule).delete(deleteSchedule)
+router.route('/schedules').get(allSchedules).post(scheduleValidator, storeSchedule)
+router.route('/schedules/:id').get(findSchedule).put(scheduleValidator, updateSchedule).delete(deleteSchedule)
 
 //Seat route
-router.route('/seats').get(allSeats).post(seatValidator,storeSeat)
-router.route('/seats/:id').get(findSeat).put(seatValidator,updateSeat).delete(deleteSeat)
+router.route('/seats').get(allSeats).post(seatValidator, storeSeat)
+router.route('/seats/:id').get(findSeat).put(seatValidator, updateSeat).delete(deleteSeat)
 
 router.get('/', (req, res) => res.send('Hello Swift Rails!'))
 router.get('/', (req, res) => res.send(`Welcome, ${req.admin.name}`))
@@ -63,6 +63,7 @@ router.route('/stations/:id').get(findStation).put(updateStation).delete(deleteS
 
 //fares route
 router.route('/fares').get(allFares).post(fareValidator, storeFare)
+router.get('/fares/pricing', faresWithAmounts)
 router.route('/fares/:id').get(findFare).put(updateFare).delete(deleteFare)
 
 
@@ -83,7 +84,6 @@ router.route('/amounts').get(allAmounts).post(storeAmount)
 router.route('/amounts/:id').get(findAmount).put(updateAmount).delete(deleteAmount)
 
 // Admin route
-router.route('/login').get((req, res)=>{}).post(login)
 router.route('/admins').get(allAdmins).post(storeAdmin)
 router.route('/admins/:id').get(findAdmin).put(updateAdmin).delete(deleteAdmin)
 

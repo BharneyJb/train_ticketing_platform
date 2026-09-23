@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const { allCoaches, findCoach } = require("../controllers/coachController");
 const { findBooking, storeBooking } = require("../controllers/bookingController");
-const { findCustomer, updateCustomer } = require("../controllers/customerController");
+const { storeCustomer, findCustomer, updateCustomer } = require("../controllers/customerController");
 const { allSchedules, findSchedule, getSchedulesByRoute, getScheduleOptions } = require("../controllers/scheduleController");
 const { findSeat, allSeats } = require("../controllers/seatController");
 const { allStations, findStation } = require("../controllers/stationController");
@@ -9,22 +9,30 @@ const { allFares, findFare, faresWithAmounts } = require("../controllers/faresCo
 const { allBookedSeats, storeBookedSeat } = require("../controllers/bookedSeatController");
 const { allTrains, findTrain } = require("../controllers/trainController");
 const { findAmount } = require("../controllers/amountController");
+const customerValidator = require("../validators/customerValidator");
+
 const router = Router()
 const customerAuth = require("../middleware/customerAuth")
-
 const { customerLogin } = require('../controllers/customerAuthController')
-router.route('/login').get((req, res) => { }).post(customerLogin)
-router.use(customerAuth);
-// coaches routes 
 
+// ─── Public routes (no auth required) ────────────────────────────────────────
+router.route('/login').get((req, res) => { }).post(customerLogin)
+
+// Register: must sit above customerAuth middleware so unauthenticated users can access it
+router.post('/register', customerValidator, storeCustomer)
+
+// ─── All routes below this line require a valid JWT ──────────────────────────
+router.use(customerAuth);
+
+// coaches routes
 router.get("/coaches", allCoaches);
 router.get("/coaches/:id", findCoach);
 
-// booking routes 
+// booking routes
 router.get("/bookings/:id", findBooking);
 router.post("/bookings", storeBooking);
 
-// customer routes 
+// customer routes
 router.get("/customers", findCustomer);
 router.put("/customers", updateCustomer);
 
@@ -57,6 +65,5 @@ router.get("/trains/:id", findTrain);
 
 // amount routes
 router.get("/amounts/:id", findAmount);
-
 
 module.exports = router;

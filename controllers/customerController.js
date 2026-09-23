@@ -6,9 +6,9 @@ let storeCustomer = async (req, res) => {
     customer.password = bcrypt.hashSync(customer.password, 10);
     await customer.add()
     if (customer.id) {
-        res.send('Customer saved Successfully')
+        res.status(201).json({ message: 'Registration successful. Please log in.' })
     } else {
-        res.send('Unable to save customer')
+        res.status(500).json({ message: 'Unable to save customer' })
     }
 }
 
@@ -21,14 +21,22 @@ let updateCustomer = async (req, res) => {
     }
     customer.setProp(req.body);
     const updated = await customer.update();
-    // Return user data for Flutter app
-    res.json({
+    if (!updated) {
+        return res.status(500).json({ message: 'Update failed' });
+    }
+    // Re-fetch updated customer so we return fresh data
+    const fresh = await Customer.findByEmail(customer.email);
+    return res.json({
         message: 'Profile updated successfully',
         user: {
-            id: updated.id,
-            name: updated.name,
-            email: updated.email,
-            phone: updated.phone || ''
+            id: fresh.id,
+            firstName: fresh.firstName,
+            surname: fresh.surname,
+            email: fresh.email,
+            phone: fresh.phone || '',
+            gender: fresh.gender || '',
+            dob: fresh.dob || null,
+            nin: fresh.nin || '',
         }
     });
 }
@@ -43,9 +51,13 @@ let findCustomer = async (req, res) => {
     const customer = req.customer;
     res.json({
         id: customer.id,
-        name: customer.name,
+        firstName: customer.firstName,
+        surname: customer.surname,
         email: customer.email,
-        phone: customer.phone || ''
+        phone: customer.phone || '',
+        gender: customer.gender || '',
+        dob: customer.dob || null,
+        nin: customer.nin || '',
     });
 }
 

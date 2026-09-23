@@ -34,4 +34,6 @@ coverage/
 #train sql
 train_ticketing.sql
 BACKEND_CONNECTION_GUIDE.md
+README.md
+FRONTEND_FLOW.md
 

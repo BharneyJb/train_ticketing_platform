@@ -1,6 +1,6 @@
-# SwiftRails Backend API 🚂
+# SwiftRails Train Ticketing Platform 🚂
 
-> A robust, scalable Node.js/Express backend for the SwiftRails train ticketing platform, powered by MySQL.
+A complete train ticketing ecosystem comprising a robust Node.js/Express backend and a modern frontend (Flutter/Web).
 
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-green)
 ![Express](https://img.shields.io/badge/Express-4.18-blue)
@@ -9,146 +9,135 @@
 
 ## 📋 Table of Contents
 - [Introduction](#introduction)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
+- [Architecture Overview](#architecture-overview)
+- [Backend Structure](#backend-structure)
+- [Frontend Guide](#frontend-guide)
+  - [Proposed Structure](#proposed-frontend-structure)
+  - [Key Workflows](#key-frontend-workflows)
+  - [API Integration](#api-integration)
 - [Getting Started](#getting-started)
 - [Database Setup](#database-setup)
-- [API Documentation](#api-documentation)
-- [Frontend Integration](#frontend-integration)
 - [Contributing](#contributing)
-- [Contact](#contact)
 
 ## 📖 Introduction
-The **SwiftRails Backend** is the server-side component of the SwiftRails ecosystem. It provides a RESTful API to manage the entire lifecycle of a train ticketing system, including user authentication, train scheduling, seat booking, coach management, and admin operations. It communicates seamlessly with the SwiftRails Flutter mobile application.
+SwiftRails is a comprehensive platform for managing train schedules and ticketing. It allows customers to search for trains, check seat availability, and book tickets, while providing administrators with a full suite of tools to manage the railway infrastructure (trains, stations, coaches, and fares).
 
-## ✨ Features
-- **Authentication & Security**
-  - specific Customer & Admin login flows
-  - JWT (JSON Web Token) based authentication
-  - Password encryption using Bcrypt
+## 🏗 Architecture Overview
+The project follows a **Client-Server architecture**:
+- **Backend**: A RESTful API built with Node.js and Express, using MySQL for data persistence.
+- **Frontend**: A consumer application (e.g., Flutter) that interacts with the API via JSON.
 
-- **Train Management**
-  - Manage trains, stations, and routes
-  - Configure schedules and travel classes
-  - Coach and seat layout management
+## 📂 Backend Structure
+The backend is organized by concern to ensure scalability and maintainability:
 
-- **Booking System**
-  - Real-time seat availability
-  - Booking creation and cancellation
-  - Ticket generation and management
-  - Fare calculation based on distance and class
-
-- **User Profile**
-  - Customer registration and profile management
-  - Booking history tracking
-
-## 🛠 Technology Stack
-- **Runtime Environment**: [Node.js](https://nodejs.org/)
-- **Framework**: [Express.js](https://expressjs.com/)
-- **Database**: [MySQL](https://www.mysql.com/)
-- **Authentication**: JWT & Bcrypt
-- **Validation**: Express-Validator
-- **ORM/Query Builder**: MySQL2 (Direct queries & Promise wrapper)
-
-## 📂 Project Structure
 ```
 train_ticketing_platform/
-├── controllers/      # Request handlers for API endpoints
-├── middleware/       # Custom middleware (Auth, Validation)
-├── models/           # Database models and schema logic
-├── routes/           # API route definitions
-├── validators/       # Request validation logic
-├── app.js            # Application entry point & config
+├── controllers/      # Request handlers (Business logic)
+├── middleware/       # Auth (JWT), validation, and error handling
+├── models/           # Database queries and connection logic
+├── routes/           # API endpoint definitions (Admin vs Client)
+├── validators/       # Input validation schemas
+├── app.js            # Entry point & Express configuration
 ├── package.json      # Dependencies and scripts
-└── train_ticketing.sql # Database schema import file
+└── train_ticketing.sql # Database schema
 ```
 
-## ✅ Prerequisites
-Ensure you have the following installed on your local machine:
-- **Node.js** (v14 or higher)
-- **npm** (Node Package Manager)
-- **MySQL Server** (local or remote instance)
-- **Git**
+## 📱 Frontend Guide
+This section provides the blueprint for the frontend implementation to ensure alignment with the backend API.
+
+### 📂 Proposed Frontend Structure
+To maintain a clean and scalable frontend, the following feature-based architecture is recommended:
+
+```
+frontend/
+├── src/
+│   ├── api/                # API Client & Endpoint Definitions
+│   │   ├── client.js       # Axios/Fetch base configuration & Interceptors
+│   │   ├── auth.api.js      # /login, /customers (profile)
+│   │   ├── booking.api.js  # /schedules, /seats, /bookings, /fares
+│   │   └── admin.api.js    # Admin-specific management endpoints
+│   ├── assets/             # Static assets (Images, SVGs, Fonts)
+│   ├── components/         # Shared UI Components
+│   │   ├── common/         # Buttons, Inputs, Loaders
+│   │   └── layout/         # Navigation, Header, Footer
+│   ├── constants/           # App constants, Route names, API Base URLs
+│   ├── hooks/              # Custom logic (e.g., useAuth, useBookingFlow)
+│   ├── models/             # Type definitions (User, Train, Schedule, Booking)
+│   ├── pages/              # Feature-based views
+│   │   ├── auth/           # Login, Registration, Forgot Password
+│   │   ├── customer/       # Profile, My Bookings, Notifications
+│   │   ├── booking/        # Search $\rightarrow$ Schedule Selection $\rightarrow$ Seat Selection $\rightarrow$ Payment
+│   │   └── admin/          # Dashboard, Train Mgmt, Station Mgmt, Booking Mgmt
+│   ├── store/              # State Management (Redux, Zustand, or Provider)
+│   │   ├── authStore.js    # User session, JWT token, Role
+│   │   └── bookingStore.js # Current search filters, selected seat, fare
+│   └── utils/              # Helper functions (Date formatting, currency, validation)
+```
+
+### 🔄 Key Frontend Workflows
+
+#### 1. Ticket Booking Flow
+The frontend should orchestrate the following API sequence:
+1. **Search**: `GET /stations` $\rightarrow$ User selects `from` and `to` $\rightarrow$ `GET /schedules/route/:fromStationId/:toStationId`.
+2. **Schedule Selection**: User selects a train $\rightarrow$ `GET /schedules/:id/options`.
+3. **Seat Selection**: `GET /seats` (filtered by coach/train) $\rightarrow$ User selects a seat.
+4. **Pricing**: `GET /fares/pricing` $\rightarrow$ Display final amount.
+5. **Confirmation**: `POST /bookings` $\rightarrow$ `POST /booked-seats`.
+
+#### 2. Authentication Flow
+- **Login**: `POST /login` $\rightarrow$ Receive JWT $\rightarrow$ Store in secure storage.
+- **Authorization**: Attach `Authorization: Bearer <token>` to all requests to protected routes.
+- **Profile**: `GET /customers` $\rightarrow$ Populate user profile in the app.
+
+#### 3. Admin Management Flow
+- **Dashboard**: `GET /trains`, `GET /stations` $\rightarrow$ Summary cards.
+- **CRUD Operations**: Use `POST`, `PUT`, `DELETE` on admin routes (e.g., `/admin/coaches`) to manage infrastructure.
+
+### 📡 API Integration
+
+#### Base URL
+`http://localhost:3000` (or your server's IP)
+
+#### Primary Endpoints
+
+| Feature | Client Endpoint | Admin Endpoint | Auth Required |
+| :--- | :--- | :--- | :---: |
+| **Auth** | `POST /login` | `POST /login` | ❌ |
+| **Customers** | `GET /customers`, `PUT /customers` | `GET /customers`, `POST /customers` | ✅ |
+| **Schedules** | `GET /schedules/route/...` | `POST /schedules`, `PUT /schedules` | Client: ❌ / Admin: ✅ |
+| **Bookings** | `POST /bookings`, `GET /bookings/:id` | `GET /bookings`, `DELETE /bookings` | ✅ |
+| **Seats** | `GET /seats`, `GET /seats/:id` | `POST /seats`, `PUT /seats` | Client: ❌ / Admin: ✅ |
+| **Fares** | `GET /fares/pricing` | `POST /fares`, `PUT /fares` | Client: ❌ / Admin: ✅ |
+| **Trains** | `GET /trains`, `GET /trains/:id` | `POST /trains`, `PUT /trains` | Client: ❌ / Admin: ✅ |
 
 ## 🚀 Getting Started
 
-1. **Clone the Repository**
+### Prerequisites
+- **Node.js** (v14+) & **npm**
+- **MySQL Server**
+
+### Installation
+1. **Clone & Install**:
    ```bash
    git clone https://github.com/tessyjonburica/train_ticketing_platform.git
    cd train_ticketing_platform
-   ```
-
-2. **Install Dependencies**
-   ```bash
    npm install
    ```
-
-3. **Configure Environment**
-   - Ensure your MySQL server is running.
-   - Update database credentials in `models/connection.js` if necessary (Default: root/no password).
-
-4. **Run the Server**
-   ```bash
-   # Development mode (with Nodemon)
-   npm run dev
-
-   # Production mode
-   node app.js
-   ```
-   The server will start on `http://localhost:3000`.
-
-## 🗄️ Database Setup
-1. Log in to your MySQL console or client.
-2. Create a new database (optional, or use the one in the SQL file).
-3. Import the provided schema:
+2. **Database Setup**:
    ```bash
    mysql -u root -p < train_ticketing.sql
    ```
-   *Note: This will create the necessary tables and seed initial data.*
-
-## 📡 API Documentation
-The API is designed with REST principles.
-
-### Base URL
-`http://localhost:3000`
-
-### Key Endpoints
-
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :---: |
-| **Auth** | | | |
-| `POST` | `/login` | Customer login | ❌ |
-| **Customers** | | | |
-| `GET` | `/customers` | Get profile details | ✅ |
-| `PUT` | `/customers` | Update profile | ✅ |
-| **Trains & Schedules** | | | |
-| `GET` | `/trains` | List all trains | ❌ |
-| `GET` | `/schedules` | List all schedules | ❌ |
-| `GET` | `/routes` | Search routes | ❌ |
-| **Bookings** | | | |
-| `POST` | `/bookings` | Create a new booking | ✅ |
-| `GET` | `/bookings/:id` | Get booking details | ✅ |
-
-*For a full list of endpoints, please refer to the `routes/` directory.*
-
-## 📱 Frontend Integration
-This backend is designed to work with the **SwiftRails Flutter App**.
-- **Location**: `../swift_rails-master`
-- **Connection**: Update `lib/app/core/utils/api_endpoints.dart` in the Flutter project to point to this server's IP address (e.g., `http://localhost:3000` or your machine's local IP).
+3. **Run**:
+   ```bash
+   npm run dev  # Development
+   node app.js  # Production
+   ```
 
 ## 🤝 Contributing
-Contributions are welcome!
-1. Fork the project.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
-
-## 📩 Contact
-**SwiftRails Team**
-- GitHub: [https://github.com/tessyjonburica](https://github.com/tessyjonburica)
+1. Fork the repo.
+2. Create a feature branch: `git checkout -b feature/AmazingFeature`.
+3. Commit and push.
+4. Open a Pull Request.
 
 ---
-*Generated for SwiftRails Project*
+*SwiftRails Project Documentation*

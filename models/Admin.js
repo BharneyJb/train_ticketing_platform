@@ -23,5 +23,6 @@ class Admin extends Model {
         return null
     }
 
-
 }
+
+module.exports = Admin;

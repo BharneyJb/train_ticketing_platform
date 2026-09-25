@@ -45,15 +45,17 @@ let getSchedulesByRoute = async (req, res) => {
         const connection = require("../models/connection");
 
         let sql = `
-            SELECT s.* 
+            SELECT s.*, t.trainName, t.trainNumber, st1.stationName as fromStation, st2.stationName as toStation
             FROM schedules s
-            WHERE s.stationId = ? 
-            AND s.departureStation = ?
+            JOIN trains t ON s.trainId = t.id
+            JOIN stations st1 ON s.fromStationId = st1.id
+            JOIN stations st2 ON s.toStationId = st2.id
+            WHERE s.fromStationId = ?
+            AND s.toStationId = ?
         `;
 
-        const params = [toStationId, fromStationId];
+        const params = [fromStationId, toStationId];
 
-        // If date parameter is provided, filter by date
         if (date) {
             sql += ` AND DATE(s.departureTime) = DATE(?)`;
             params.push(date);

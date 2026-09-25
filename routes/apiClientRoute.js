@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { allCoaches, findCoach } = require("../controllers/coachController");
-const { findBooking, storeBooking } = require("../controllers/bookingController");
+const { findBooking, storeBooking, allBookings } = require("../controllers/bookingController");
 const { storeCustomer, findCustomer, updateCustomer } = require("../controllers/customerController");
 const { allSchedules, findSchedule, getSchedulesByRoute, getScheduleOptions } = require("../controllers/scheduleController");
 const { findSeat, allSeats } = require("../controllers/seatController");
@@ -29,6 +29,7 @@ router.get("/coaches", allCoaches);
 router.get("/coaches/:id", findCoach);
 
 // booking routes
+router.get("/bookings", allBookings);
 router.get("/bookings/:id", findBooking);
 router.post("/bookings", storeBooking);
 

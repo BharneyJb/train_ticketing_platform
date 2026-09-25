@@ -41,8 +41,14 @@ let findBooking = async (req, res) => {
 }
 
 let allBookings = async (req, res) => {
-    let results = await Booking.find()
-    res.send(results)
+    try {
+        const customerId = req.customer.id;
+        let results = await Booking.findByCustomerId(customerId);
+        res.send(results);
+    } catch (error) {
+        console.error("Error fetching bookings:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 }
 
 module.exports = { storeBooking, allBookings, findBooking, updateBooking, deleteBooking }

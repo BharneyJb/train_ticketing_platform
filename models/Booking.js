@@ -5,6 +5,30 @@ const Fare = require("./Fare")
 
 class Booking extends Model {
 
+    static async findByCustomerId(customerId) {
+        const [rows] = await connection.execute(
+            `SELECT
+                b.*,
+                s.departureTime, s.arrivalTime,
+                t.trainName, t.trainNumber,
+                st1.stationName as fromStation,
+                st2.stationName as toStation,
+                (SELECT GROUP_CONCAT(CONCAT(c.coachNumber, ' ', seat.seatNumber) SEPARATOR ', ')
+                 FROM bookedSeats bs
+                 JOIN seats seat ON bs.seatId = seat.id
+                 JOIN coaches c ON seat.coachId = c.id
+                 WHERE bs.bookingId = b.id) as seats
+             FROM bookings b
+             JOIN schedules s ON b.scheduleId = s.id
+             JOIN trains t ON s.trainId = t.id
+             JOIN stations st1 ON s.fromStationId = st1.id
+             JOIN stations st2 ON s.toStationId = st2.id
+             WHERE b.customerId = ?`,
+            [customerId]
+        );
+        return rows;
+    }
+
     static async createBooking(data) {
 
         const conn = connection;
@@ -127,9 +151,9 @@ class Booking extends Model {
 
                 await conn.execute(
                     `
-                    UPDATE seats 
+                    UPDATE seats
                     SET status = 'Unavailable'
-                    WHERE id = ? 
+                    WHERE id = ?
                     `,
                     [passenger.seatId]
                 );
@@ -149,10 +173,7 @@ class Booking extends Model {
 
         }
     }
+
 }
-
-
-
-
 
 module.exports = Booking

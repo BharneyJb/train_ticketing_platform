@@ -10,7 +10,7 @@ class Booking extends Model {
             `SELECT
                 b.*,
                 s.departureTime, s.arrivalTime,
-                t.trainName, t.trainNumber,
+                t.code as trainName, t.code as trainNumber,
                 st1.stationName as fromStation,
                 st2.stationName as toStation,
                 (SELECT GROUP_CONCAT(CONCAT(c.coachNumber, ' ', seat.seatNumber) SEPARATOR ', ')

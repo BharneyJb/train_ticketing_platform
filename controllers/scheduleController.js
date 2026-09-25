@@ -45,7 +45,7 @@ let getSchedulesByRoute = async (req, res) => {
         const connection = require("../models/connection");
 
         let sql = `
-            SELECT s.*, t.trainName, t.trainNumber, st1.stationName as fromStation, st2.stationName as toStation
+            SELECT s.*, t.code as trainName, t.code as trainNumber, st1.stationName as fromStation, st2.stationName as toStation
             FROM schedules s
             JOIN trains t ON s.trainId = t.id
             JOIN stations st1 ON s.fromStationId = st1.id
